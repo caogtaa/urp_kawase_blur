@@ -25,10 +25,10 @@ public class KawaseBlur : ScriptableRendererFeature
     class CustomRenderPass : ScriptableRenderPass
     {
         public Material blurMaterial;
-        public int passes;
-        public int downsample;
-        public bool copyToFramebuffer;
-        public string targetName;        
+        public int passes;              // 模糊迭代次数
+        public int downsample;          // 控制src降采样率
+        public bool copyToFramebuffer;  // 为true时，直接替换原始colorAttachment（是否兼容全平台需要测试，尤其注意开了pp的情况）
+        public string targetName;       // 全局纹理的名字
         string profilerTag;
 
         int tmpId1;
@@ -48,6 +48,8 @@ public class KawaseBlur : ScriptableRendererFeature
             this.profilerTag = profilerTag;
         }
 
+        // 每一帧调用
+        // Execute()前调用
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
             var width = cameraTextureDescriptor.width / downsample;
@@ -55,13 +57,13 @@ public class KawaseBlur : ScriptableRendererFeature
 
             tmpId1 = Shader.PropertyToID("tmpBlurRT1");
             tmpId2 = Shader.PropertyToID("tmpBlurRT2");
-            cmd.GetTemporaryRT(tmpId1, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+            cmd.GetTemporaryRT(tmpId1, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);      // 只添加cmd，不做真实创建
             cmd.GetTemporaryRT(tmpId2, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
 
             tmpRT1 = new RenderTargetIdentifier(tmpId1);
             tmpRT2 = new RenderTargetIdentifier(tmpId2);
             
-            ConfigureTarget(tmpRT1);
+            ConfigureTarget(tmpRT1);        // 并不会创建或者bind RT。ConfigureTarget传入的RT，在Execute()结束后会自动释放
             ConfigureTarget(tmpRT2);
         }
 
@@ -93,7 +95,7 @@ public class KawaseBlur : ScriptableRendererFeature
                 cmd.Blit(tmpRT1, source, blurMaterial);
             } else {
                 cmd.Blit(tmpRT1, tmpRT2, blurMaterial);
-                cmd.SetGlobalTexture(targetName, tmpRT2);
+                cmd.SetGlobalTexture(targetName, tmpRT2);       // RT复制给全局RT
             }
 
             context.ExecuteCommandBuffer(cmd);
