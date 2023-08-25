@@ -1,6 +1,7 @@
-#if UNITY_WEBGL || UNITY_EDITOR
 using System;
+
 using UnityEngine;
+
 using WeChatWASM;
 
 internal class CheckFrame : MonoBehaviour
@@ -30,4 +31,3 @@ internal class HideLoadingPage : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 }
-#endif

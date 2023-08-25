@@ -194,6 +194,13 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(returnStr, buffer, bufferSize);
         return buffer;
     },
+    WXCreateGridAd: function (conf) {
+        var returnStr = window.WXWASMSDK.WXCreateGridAd(_WXPointer_stringify_adaptor(conf));
+        var bufferSize = lengthBytesUTF8(returnStr) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(returnStr, buffer, bufferSize);
+        return buffer;
+    },
     WXCreateCustomAd: function (conf) {
         var returnStr = window.WXWASMSDK.WXCreateCustomAd(_WXPointer_stringify_adaptor(conf));
         var bufferSize = lengthBytesUTF8(returnStr) + 1;
@@ -552,26 +559,6 @@ mergeInto(LibraryManager.library, {
         var heap_end = _sbrk()
         return HEAP8.length - heap_end
         return 0
-    },
-    WXGetEXFrameTime : function() {
-        if(typeof GameGlobal.calcFrameTimeFunc == "undefined") 
-        {
-            GameGlobal.calcFrameTimeFunc = function () 
-            {
-                var frameCount = 0;
-                var exTotalTime = 0;
-                return function update(frameStart, frameEnd) {
-                  frameCount++;
-                  exTotalTime += (frameEnd - frameStart);
-                  if (frameCount >= 60) {
-                    GameGlobal.avgExFrameTime = exTotalTime / 60;
-                    frameCount = 0;
-                    exTotalTime = 0;
-                  }
-                };
-            }();
-        } 
-        return GameGlobal.avgExFrameTime
     },
     WXProfilingMemoryDump: function() {
         if (typeof emscriptenMemoryProfiler !== "undefined")  {
