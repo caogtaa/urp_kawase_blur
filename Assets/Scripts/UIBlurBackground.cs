@@ -45,8 +45,14 @@ public class UIBlurBackground : MonoBehaviour
 
     private void Start()
     {
-        _rt1 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, GraphicsFormat.R16G16B16A16_SFloat);
-        _rt2 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, GraphicsFormat.R16G16B16A16_SFloat);
+        // _rt1 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, GraphicsFormat.R16G16B16A16_SFloat);
+        // _rt2 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, GraphicsFormat.R16G16B16A16_SFloat);
+        // _rt1 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, GraphicsFormat.B10G11R11_UFloatPack32);
+        // _rt2 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, GraphicsFormat.B10G11R11_UFloatPack32);
+
+        _rt1 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, RenderTextureFormat.DefaultHDR);
+        _rt2 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0, RenderTextureFormat.DefaultHDR);
+
         _m1.mainTexture = _rt1;
         _m2.mainTexture = _rt2;
 
@@ -122,6 +128,7 @@ public class UIBlurBackground : MonoBehaviour
                     //     m_targetCamera = GeCameraControllerScroll.CurMainCamera;
                     //     return;
                     // }
+                    Debug.LogError("不要进");
                     cmd.Blit(BuiltinRenderTextureType.CurrentActive, _rt1, _blurMaterial);
                 } 
 
